@@ -67,7 +67,8 @@ var Prefs = (function () {
     version: 0,
     language: function () { return pick('language', CONFIG.language || 'auto'); },
     temperature: function () { return pick('temperature', CONFIG.temperature || 'auto'); },
-    theme: function () { return pick('theme', CONFIG.theme || 'auto'); },
+    // Dark (the northern lights) unless the config asks for light; Auto, on the TV, brings back the day look by day.
+    theme: function () { return pick('theme', CONFIG.theme === 'light' ? 'light' : 'dark'); },
     weather: function () { return pick('weather', true); },
     /** OK on the screensaver opens the title it shows, in its app; any other key only closes it (off by default). */
     saverWatch: function () { return pick('saverWatch', false) === true; },

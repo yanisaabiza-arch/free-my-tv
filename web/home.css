@@ -68,6 +68,90 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .drawer-open #sky .lift { opacity: 0.32; }
 .night.drawer-open #sky .lift { opacity: 0.42; }
 
+/*
+ * The dark look's background: northern lights over Tromsø (aurora.jpg, by Andi Gentsch, CC BY-SA 2.0, Wikimedia Commons),
+ * slowly drifting. It takes the place of the focused pick's photo, and the veil only darkens the bottom for the shelf.
+ */
+#sky .aurora {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('aurora.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  -webkit-transition: opacity 2s;
+  transition: opacity 2s;
+}
+.night #sky .aurora {
+  opacity: 1;
+  -webkit-animation: sway 90s ease-in-out infinite alternate;
+  animation: sway 90s ease-in-out infinite alternate;
+}
+@-webkit-keyframes sway { from { -webkit-transform: scale(1.04); } to { -webkit-transform: scale(1.12) translate(-1.5%, 1%); } }
+@keyframes sway { from { transform: scale(1.04); } to { transform: scale(1.12) translate(-1.5%, 1%); } }
+.night #sky canvas { visibility: hidden; }
+.night #sky .veil {
+  background: -webkit-linear-gradient(top, rgba(4, 10, 24, 0.1), rgba(4, 10, 24, 0.05) 50%, rgba(2, 6, 14, 0.55));
+  background: linear-gradient(rgba(4, 10, 24, 0.1), rgba(4, 10, 24, 0.05) 50%, rgba(2, 6, 14, 0.55));
+}
+
+/* Ambient light: three big soft glows drifting slowly, pastel by day; at night, aurora colors shimmering on the photo. */
+#sky .orb {
+  position: absolute;
+  width: 1500px;
+  height: 1500px;
+  border-radius: 750px;
+  opacity: 0.6;
+  -webkit-transition: opacity 2s;
+  transition: opacity 2s;
+}
+#sky .o1 {
+  left: -420px;
+  top: -620px;
+  background: -webkit-radial-gradient(center, circle, rgba(120, 180, 255, 0.85) 0, rgba(120, 180, 255, 0) 68%);
+  background: radial-gradient(circle, rgba(120, 180, 255, 0.85) 0, rgba(120, 180, 255, 0) 68%);
+  -webkit-animation: drift1 46s ease-in-out infinite alternate;
+  animation: drift1 46s ease-in-out infinite alternate;
+}
+#sky .o2 {
+  left: 960px;
+  top: -380px;
+  background: -webkit-radial-gradient(center, circle, rgba(196, 160, 255, 0.8) 0, rgba(196, 160, 255, 0) 68%);
+  background: radial-gradient(circle, rgba(196, 160, 255, 0.8) 0, rgba(196, 160, 255, 0) 68%);
+  -webkit-animation: drift2 58s ease-in-out infinite alternate;
+  animation: drift2 58s ease-in-out infinite alternate;
+}
+#sky .o3 {
+  left: 260px;
+  top: 300px;
+  background: -webkit-radial-gradient(center, circle, rgba(255, 190, 160, 0.75) 0, rgba(255, 190, 160, 0) 68%);
+  background: radial-gradient(circle, rgba(255, 190, 160, 0.75) 0, rgba(255, 190, 160, 0) 68%);
+  -webkit-animation: drift3 70s ease-in-out infinite alternate;
+  animation: drift3 70s ease-in-out infinite alternate;
+}
+.night #sky .orb { opacity: 0.22; }
+.night #sky .o1 {
+  background: -webkit-radial-gradient(center, circle, rgba(60, 255, 170, 0.9) 0, rgba(60, 255, 170, 0) 68%);
+  background: radial-gradient(circle, rgba(60, 255, 170, 0.9) 0, rgba(60, 255, 170, 0) 68%);
+}
+.night #sky .o2 {
+  background: -webkit-radial-gradient(center, circle, rgba(140, 90, 255, 0.85) 0, rgba(140, 90, 255, 0) 68%);
+  background: radial-gradient(circle, rgba(140, 90, 255, 0.85) 0, rgba(140, 90, 255, 0) 68%);
+}
+.night #sky .o3 {
+  background: -webkit-radial-gradient(center, circle, rgba(40, 200, 255, 0.8) 0, rgba(40, 200, 255, 0) 68%);
+  background: radial-gradient(circle, rgba(40, 200, 255, 0.8) 0, rgba(40, 200, 255, 0) 68%);
+}
+@-webkit-keyframes drift1 { from { -webkit-transform: translate(0, 0) scale(1); } to { -webkit-transform: translate(380px, 240px) scale(1.15); } }
+@keyframes drift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(380px, 240px) scale(1.15); } }
+@-webkit-keyframes drift2 { from { -webkit-transform: translate(0, 0) scale(1.1); } to { -webkit-transform: translate(-460px, 300px) scale(0.95); } }
+@keyframes drift2 { from { transform: translate(0, 0) scale(1.1); } to { transform: translate(-460px, 300px) scale(0.95); } }
+@-webkit-keyframes drift3 { from { -webkit-transform: translate(0, 0) scale(0.95); } to { -webkit-transform: translate(520px, -220px) scale(1.12); } }
+@keyframes drift3 { from { transform: translate(0, 0) scale(0.95); } to { transform: translate(520px, -220px) scale(1.12); } }
+
 /* MARK: - Moving parts: the top fades and everything rises when the drawer opens. */
 
 /* Each part is its own stack, so a focused tile (z-index) never shows over the drawer, a sheet or the screensaver. */
@@ -97,8 +181,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   top: 52px;
   margin: 0;
   font-size: 76px;
-  font-weight: 600;
-  letter-spacing: 0.004em;
+  font-weight: 700;
+  letter-spacing: -0.022em;
   line-height: 1;
   white-space: nowrap;
   color: #1D1D1F;
@@ -218,7 +302,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  border-radius: 18px;
+  border-radius: 28px;
   overflow: hidden;
   background-color: #DADADF;
   background-size: cover;
@@ -250,7 +334,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   top: 0;
   right: 0;
   bottom: 0;
-  border-radius: 18px;
+  border-radius: 28px;
   box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.85);
   background: -webkit-linear-gradient(-60deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 55%);
   background: linear-gradient(150deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 55%);
@@ -344,7 +428,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   position: absolute;
   top: 854px;
   height: 126px;
-  border-radius: 22px;
+  border-radius: 30px;
   overflow: hidden;
   color: #FFF;
   box-shadow: 0 4px 22px rgba(0, 0, 0, 0.14);
@@ -546,29 +630,53 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .toggle.on { background: #3FD69B; }
 .toggle.on::after { -webkit-transform: translateX(34px); transform: translateX(34px); }
 
-/* MARK: - Screensaver: the picks' photos, slowly moving, and a clock */
+/*
+ * MARK: - Screensaver: a gallery (art.js), one work every 10 minutes. A painting sits in a cream mat that fills the
+ * screen, as if the TV were its frame (Samsung's The Frame); a landscape photo fills the screen and drifts.
+ */
 
 #saver { background: #000; opacity: 0; visibility: hidden; -webkit-transition: opacity 1.2s, visibility 0s 1.2s; transition: opacity 1.2s, visibility 0s 1.2s; }
 #saver.on { opacity: 1; visibility: visible; -webkit-transition-delay: 0s; transition-delay: 0s; }
-#saver .photo { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background-size: cover; background-position: center; opacity: 0; -webkit-transition: opacity 2.4s, -webkit-transform 24s linear; transition: opacity 2.4s, transform 24s linear; }
-#saver .photo.on { opacity: 1; }
-#saver .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 520px; background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.55)); background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.55)); }
+#saver .slide { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; opacity: 0; -webkit-transition: opacity 3s; transition: opacity 3s; }
+#saver .slide.on { opacity: 1; }
+#saver .photo { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background-size: cover; background-position: center; }
+#saver .slide.on .photo { -webkit-animation: drift 600s linear both; animation: drift 600s linear both; }
+@-webkit-keyframes drift { from { -webkit-transform: scale(1.02); } to { -webkit-transform: scale(1.14) translateX(-2%); } }
+@keyframes drift { from { transform: scale(1.02); } to { transform: scale(1.14) translateX(-2%); } }
+#saver .mat {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  background: #EEEAE3;
+  background: -webkit-linear-gradient(top, #F4F1EC, #E9E4DC);
+  background: linear-gradient(#F4F1EC, #E9E4DC);
+}
+/* The mat's cut: a thin light bevel around the painting, which sits a little behind it. */
+#saver .cut { position: absolute; padding: 5px; background: #FBF9F6; box-shadow: 0 1px 3px rgba(80, 60, 40, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.06); }
+#saver .art { background-size: cover; background-position: center; box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.32), inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+#saver .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 360px; background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)); background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)); }
 #saver .clock {
   position: absolute;
-  left: 80px;
-  bottom: 90px;
-  padding: 26px 46px 30px;
-  border-radius: 46px;
+  right: 84px;
+  bottom: 60px;
+  text-align: right;
   color: #FFF;
-  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.1));
-  background: linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.1));
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35), inset 0 1.5px 0 rgba(255, 255, 255, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
   white-space: nowrap;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
 }
-#saver .clock .time { font-size: 150px; font-weight: 300; line-height: 1; letter-spacing: -0.02em; -webkit-font-feature-settings: 'tnum'; font-feature-settings: 'tnum'; }
-#saver .clock .date { margin-top: 10px; font-size: 34px; font-weight: 500; color: rgba(255, 255, 255, 0.82); }
-#saver .clock .title { margin-top: 18px; font-size: 26px; font-weight: 500; color: rgba(255, 255, 255, 0.65); }
-#saver .clock .hint { margin-top: 8px; font-size: 22px; color: rgba(255, 255, 255, 0.55); }
+#saver .clock .time { font-size: 96px; font-weight: 200; line-height: 1; letter-spacing: -0.03em; -webkit-font-feature-settings: 'tnum'; font-feature-settings: 'tnum'; }
+#saver .clock .date { margin-top: 8px; font-size: 30px; font-weight: 500; color: rgba(255, 255, 255, 0.85); }
+#saver .caption { position: absolute; left: 84px; bottom: 64px; max-width: 1200px; color: #FFF; text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5); }
+#saver .caption .title { font-size: 34px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#saver .caption .by { margin-top: 6px; font-size: 23px; font-weight: 500; color: rgba(255, 255, 255, 0.72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#saver .shade, #saver .clock, #saver .caption, #saver .caption .by, #saver .clock .date { -webkit-transition: opacity 3s, color 3s; transition: opacity 3s, color 3s; }
+/* On the mat: no shade, and quiet dark text, as on a museum label. */
+#saver.paper .shade { opacity: 0; }
+#saver.paper .clock, #saver.paper .caption { color: rgba(60, 48, 36, 0.78); text-shadow: none; }
+#saver.paper .caption .by, #saver.paper .clock .date { color: rgba(60, 48, 36, 0.5); }
+#saver.paper .clock .time { font-size: 64px; }
 
 /* MARK: - Toast */
 
@@ -599,3 +707,4 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* Tizen 2 and 1 GB TVs (see tv.js): no shadows or animations; their GPUs can't keep up while the focus moves. */
 .lite * { box-shadow: none !important; -webkit-transition: none !important; transition: none !important; }
+.lite #sky .orb, .lite #sky .aurora, .lite #saver .photo { -webkit-animation: none !important; animation: none !important; }

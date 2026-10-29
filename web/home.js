@@ -1427,48 +1427,82 @@
   }
 
   var saverOn = false, idleAt = Date.now(), saverIndex = 0, saverTimer = 0, saverPick = null, SAVER_AFTER = 5 * 60000;
+  // A painting sits in the mat above the caption (bottom left) and the clock (bottom right), centered on y = ART_MIDDLE.
+  var SAVER_EVERY = 10 * 60000, ART_MAX_W = 1600, ART_MAX_H = 820, ART_MIDDLE = 500;
 
-  /** The screensaver's photos: picks with an app on the TV. */
-  function saverPhotos() {
-    return Data.showcase().filter(function (p) { return p.backdrop && Data.usable(p.app); });
+  /** The gallery in a shuffled order, a painting then a landscape, so two of a kind rarely follow each other. */
+  var gallery = (function () {
+    function shuffled(kind) {
+      var list = ART.filter(function (a) { return a.kind === kind; });
+      for (var i = list.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1)), t = list[i];
+        list[i] = list[j];
+        list[j] = t;
+      }
+      return list;
+    }
+    var paintings = shuffled('painting'), photos = shuffled('photo'), out = [];
+    for (var i = 0; i < Math.max(paintings.length, photos.length); i++) {
+      if (paintings[i]) out.push(paintings[i]);
+      if (photos[i]) out.push(photos[i]);
+    }
+    return out;
+  })();
+
+  /** One slide: a landscape full screen, or a painting in a mat that fills the screen. */
+  function saverSlide(item, parent) {
+    var slide = el('div', 'slide', parent);
+    if (item.kind === 'photo') {
+      el('div', 'photo', slide).style.backgroundImage = 'url(' + item.url + ')';
+      return slide;
+    }
+    el('div', 'mat', slide);
+    var w = ART_MAX_W, h = Math.round(w / item.ratio);
+    if (h > ART_MAX_H) { h = ART_MAX_H; w = Math.round(h * item.ratio); }
+    var cut = el('div', 'cut', slide), art = el('div', 'art', cut), bevel = 5;
+    art.style.width = w + 'px';
+    art.style.height = h + 'px';
+    art.style.backgroundImage = 'url(' + item.url + ')';
+    cut.style.left = Math.round((1920 - w) / 2) - bevel + 'px';
+    cut.style.top = Math.round(ART_MIDDLE - h / 2) - bevel + 'px';
+    return slide;
   }
 
   function showSaver() {
-    var photos = saverPhotos();
     saverOn = true;
     saverPick = null;
     var s = $('saver');
     s.innerHTML = '';
-    var a = el('div', 'photo', s), b = el('div', 'photo', s);
+    var slides = el('div', 'layer', s);
     el('div', 'shade', s);
     var clock = el('div', 'clock', s);
     el('div', 'time', clock);
     el('div', 'date', clock);
-    el('div', 'title', clock);
-    var hint = el('div', 'hint', clock);
-    var front = a;
+    var caption = el('div', 'caption', s);
+    var title = el('div', 'title', caption), by = el('div', 'by', caption);
+    var front = null, failed = 0;
     function next() {
       if (!saverOn) return;
-      var p = photos.length ? photos[saverIndex++ % photos.length] : null;
-      var back = front === a ? b : a;
-      if (p) {
-        back.style.backgroundImage = 'url(' + Data.image(p.backdrop, 'original') + ')';
-        back.style.webkitTransform = back.style.transform = 'scale(1.0)';
-        clock.children[2].textContent = p.title;
-        saverPick = p;
-        // With Watch from the screensaver on, OK opens this title's app (any other key only closes).
-        var app = Prefs.saverWatch() && Data.appFor(p.app);
-        hint.textContent = app ? trf('Press OK to watch on {app} · any other button to close', {app: app.title}) : '';
-        setTimeout(function () {
-          setClass(back, 'on', true);
-          setClass(front, 'on', false);
-          back.style.webkitTransform = back.style.transform = 'scale(1.08) translateX(-1.5%)';
-          front = back;
-        }, 60);
-      }
-      tickSaverClock(clock);
-      saverTimer = setTimeout(next, 12000);
+      var item = gallery[saverIndex++ % gallery.length], img = new Image();
+      img.onload = function () {
+        if (!saverOn) return;
+        failed = 0;
+        var slide = saverSlide(item, slides), old = front;
+        title.textContent = item.title;
+        by.textContent = item.by;
+        setClass(s, 'paper', item.kind === 'painting');
+        front = slide;
+        setTimeout(function () { setClass(slide, 'on', true); }, 60);
+        if (old) setTimeout(function () { if (old.parentNode) old.parentNode.removeChild(old); }, 3200);
+        saverTimer = setTimeout(next, SAVER_EVERY);
+      };
+      img.onerror = function () {
+        // Offline or a missing picture: the next one soon, and after a whole round of failures, again in 10 minutes.
+        if (saverOn) saverTimer = setTimeout(next, ++failed < gallery.length ? 2000 : SAVER_EVERY);
+      };
+      img.src = item.url;
     }
+    tickSaverClock(clock);
     setClass(s, 'on', true);
     next();
   }
@@ -1604,8 +1638,8 @@
 
   I18N.set(Prefs.language());
   checkNight();   // now, from the last forecast: not after the TV lists its apps, with the day look until then
-  // LG's screensaver waits only when ours will show: not under a sheet (ours waits there), and not without photos.
-  TV.holdScreenSaver(function () { return !sheetOpen() && saverPhotos().length > 0; });
+  // LG's screensaver waits only when ours will show: not under a sheet (ours waits there).
+  TV.holdScreenSaver(function () { return !sheetOpen(); });
   fit();
   renderTop();
   tickClock();
